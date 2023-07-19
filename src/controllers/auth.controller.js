@@ -3,10 +3,13 @@ import { createToken } from "../services/token.services.js";
 
 export const register = async (req, res, next) => {
     try {
-        console.log("on rentre dans register");
-        console.log("body : ", req.body);
-        const { name, email, password, confirmPassword, status, pictureUrl } =
-            req.body;
+        const { name, email, password, confirmPassword, status } = req.body;
+        const picture = req.file
+        let pictureUrl = null
+        if (picture) {
+            pictureUrl = picture.path
+        }
+        console.log('picture : ', picture)
         const user = await createUser({
             name,
             email,
@@ -34,6 +37,9 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
     try {
         const user = await loginUser(email, password);
+        if (!user) {
+            return next(new Error('Invalid credentials')) 
+        }
         const accessToken = await createToken(
             { userId: user._id },
             "1h",
@@ -49,7 +55,7 @@ export const login = async (req, res, next) => {
             path: "/auth/refreshToken",
             maxAge: 30 * 24 * 60 * 60 * 1000,
         });
-        res.json({ accessToken, user });
+        res.status(200).json({ user: {...user._doc, accessToken} });
     } catch (error) {
         next(error);
     }

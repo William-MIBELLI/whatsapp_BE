@@ -1,10 +1,10 @@
 import validator from "validator"
-import { User } from '../models/user.model.js'
+import User from '../models/user.model.js'
 import bcrypt from 'bcrypt'
 
 export const createUser = async (userData) => {
 
-    const { name, email, password, confirmPassword, status, pictureUrl } = userData
+    const { name, email, password, confirmPassword, status = null, pictureUrl = null } = userData
     const { DEFAULT_STATUS, DEFAULT_PICTURE_URL } = process.env
 
     if(!name || !email || !password || !confirmPassword){
@@ -54,7 +54,7 @@ export const loginUser = async (email, password) => {
 
     try {
         const user = await User.findOne({ email: email.toLowerCase() })
-        if(!user){
+        if (!user) {
             throw new Error('Email invalid')
         }
         const verifiedPassword = await bcrypt.compare(password, user.password)
@@ -65,6 +65,6 @@ export const loginUser = async (email, password) => {
         return user
 
     } catch (error) {
-        return error
+        return null
     }
 }
