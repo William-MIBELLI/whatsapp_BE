@@ -41,7 +41,10 @@ export const getUserConversations = async (userId) => {
         users: { $elemMatch: { $eq: userId } },
     })
         .populate("users", "-password")
-        .populate("latestMessage");
+        .populate({
+            path: 'latestMessage',
+            populate: { path: 'sender'}
+        });
 
     return convos;
 };
@@ -58,3 +61,5 @@ export const updateLatestMessage = async (conversationId, messageId) => {
 
     return convo;
 };
+
+

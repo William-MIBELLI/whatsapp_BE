@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import router from "./routes/index.route.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
+import  path from 'path'
 
 dotenv.config();
 const app = express();
@@ -19,7 +20,9 @@ const fileStorage = multer.diskStorage({
 });
 
 app.use(cors());
+const __dirname = path.resolve()
 app.use(multer({ storage: fileStorage }).single("picture"));
+app.use('/src/upload', express.static(path.join(__dirname, 'src/upload')))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

@@ -8,6 +8,7 @@ export const createOpenConversation = async (req, res, next) => {
     try {
         const sender_id = req.user.userId;
         const { receiver_id } = req.body;
+        console.log(sender_id, receiver_id)
         let convo = await findConversation(sender_id, receiver_id);
         console.log('convo dans le controller : ', convo)
         if (!convo) {
@@ -24,8 +25,9 @@ export const getConversations = async (req, res, next) => {
     const userId = req.user.userId
     try {
         const convos = await getUserConversations(userId)
-        res.json(convos)
+        res.status(200).json(convos)
     } catch (error) {
         next(error)
     }
 }
+

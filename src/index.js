@@ -9,9 +9,9 @@ mongoose.connection.on('error', (error) => {
     process.exit(1)
 })
 
-if(process.env.NODE_ENV !== 'production'){
-    mongoose.set('debug', true)
-}
+// if(process.env.NODE_ENV !== 'production'){
+//     mongoose.set('debug', true)
+// }
 
 mongoose.connect(DATABASE_URL).then(() => {
     console.log('connected to mongoDB')

@@ -21,7 +21,7 @@ export const getMessages = async (req, res, next) => {
         }
         const messages = await getConversationMessages(convo_id)
 
-        res.json(messages)
+        res.status(200).json({messages})
     } catch (error) {
         next(error)
     }
