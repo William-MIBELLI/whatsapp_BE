@@ -33,7 +33,6 @@ export const createUser = async (userData) => {
     const existingUser = await User.findOne({ email })
 
     if(existingUser){
-        console.log('existing user : ', existingUser)
         throw new Error('This email address is already used, please take an other one.')
     }
 

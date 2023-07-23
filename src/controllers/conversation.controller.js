@@ -8,11 +8,8 @@ export const createOpenConversation = async (req, res, next) => {
     try {
         const sender_id = req.user.userId;
         const { receiver_id } = req.body;
-        console.log(sender_id, receiver_id)
         let convo = await findConversation(sender_id, receiver_id);
-        console.log('convo dans le controller : ', convo)
         if (!convo) {
-            console.log(' !!!!!!!!!!!!!  pas de convo, on en crée une !!!!!!!!!!!!!!!!!!')
             convo = await createConversation(sender_id, receiver_id);
         }
         res.json({ convo });

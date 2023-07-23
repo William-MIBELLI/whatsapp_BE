@@ -5,7 +5,7 @@ export const sendMessage = async (req, res, next) => {
         const senderId = req.user.userId
         const { conversationId, content } = req.body
         const message = await createMessage({ senderId, conversationId, content })
-        res.json(message)
+        res.status(201).json({message})
     } catch (error) {
         next(error)
     }
@@ -15,7 +15,6 @@ export const sendMessage = async (req, res, next) => {
 export const getMessages = async (req, res, next) => {
     try {
         const { convo_id } = req.params
-        console.log(req.params)
         if (!convo_id) {
             throw new Error('Conversation Id required')
         }

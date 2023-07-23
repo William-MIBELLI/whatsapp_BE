@@ -9,7 +9,6 @@ export const register = async (req, res, next) => {
         if (picture) {
             pictureUrl = picture.path
         }
-        console.log('picture : ', picture)
         const user = await createUser({
             name,
             email,
@@ -23,9 +22,7 @@ export const register = async (req, res, next) => {
             "1h",
             process.env.ACCESS_TOKEN_SECRET
         );
-        console.log("user avant le if ", user);
         if (user) {
-            console.log("user créé : ", user);
             res.status(200).json({ user: { ...user._doc, accessToken } });
         }
     } catch (error) {

@@ -13,7 +13,6 @@ export const findConversation = async (sender_id, receiver_id) => {
         .populate("latestMessage");
 
     if (!convos) {
-        console.log("on return false");
         return false;
     }
 
