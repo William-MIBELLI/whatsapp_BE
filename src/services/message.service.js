@@ -1,16 +1,16 @@
 import Message from "../models/message.model.js"
 import { updateLatestMessage } from "./conversation.service.js"
 
-export const createMessage = async (messageData) => {
+export const createMessage = async (messageData, files) => {
     const { senderId, conversationId, content } = messageData
-    const message = await Message.create({sender: senderId, message: content, conversation: conversationId})
+    const message = await Message.create({ sender: senderId, message: content, conversation: conversationId, files })
     await message.save()
 
     if (!message) {
         throw new Error('Failed to create message 😢')
     }
     updateLatestMessage(conversationId, message._id)
-    return message
+    return message.populate('conversation')
 }
 
 export const getConversationMessages = async (conversationId) => {

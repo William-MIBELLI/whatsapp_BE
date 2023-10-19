@@ -4,7 +4,9 @@ import { createToken } from "../services/token.services.js";
 export const register = async (req, res, next) => {
     try {
         const { name, email, password, confirmPassword, status } = req.body;
-        const picture = req.file
+        const picture = req.files.picture ? req.files.picture[0] : undefined
+        //console.log('req : ', req)
+        //console.log('picture dans register : ', req.files?.picture[0])
         let pictureUrl = null
         if (picture) {
             pictureUrl = picture.path
