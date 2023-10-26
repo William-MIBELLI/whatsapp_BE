@@ -1,9 +1,13 @@
 import Conversation from "../models/conversation.model.js";
 import User from "../models/user.model.js";
 
-export const findConversation = async (sender_id, receiver_id) => {
+export const findConversation = async (sender_id, receiver_id, convoId) => {
+
+    //const conversationId = convoId === 'undefined' ? 'w' : convoId
+    console.log('findconvo ', convoId )
+
     const convos = await Conversation.find({
-        isGroup: false,
+        _id: convoId,
         $and: [
             { users: { $elemMatch: { $eq: sender_id } } },
             { users: { $elemMatch: { $eq: receiver_id } } },
@@ -11,7 +15,7 @@ export const findConversation = async (sender_id, receiver_id) => {
     })
         .populate("users", "-password")
         .populate("latestMessage");
-
+    console.log('on passe la recherche')
     if (!convos) {
         return false;
     }

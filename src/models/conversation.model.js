@@ -25,6 +25,10 @@ const conversationSchema = mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "message",
         },
+        pictureUrl: {
+            type: String,
+            required: false
+        }
     },
     {
         timestamps: true,

@@ -7,8 +7,9 @@ import {
 export const createOpenConversation = async (req, res, next) => {
     try {
         const sender_id = req.user.userId;
-        const { receiver_id } = req.body;
-        let convo = await findConversation(sender_id, receiver_id);
+        const { receiver_id, convoId } = req.body;
+        console.log(req.body)
+        let convo = await findConversation(sender_id, receiver_id, convoId);
         if (!convo) {
             convo = await createConversation(sender_id, receiver_id);
         }

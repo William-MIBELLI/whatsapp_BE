@@ -6,6 +6,7 @@ export const sendMessage = async (req, res, next) => {
         const senderId = req.user.userId
         const { conversationId, content } = req.body
         const { files } = req.files
+        console.log('body dans /message' ,req.body)
         const message = await createMessage({ senderId, conversationId, content }, files)
         res.status(201).json({message})
     } catch (error) {

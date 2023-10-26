@@ -10,11 +10,11 @@ export const createMessage = async (messageData, files) => {
         throw new Error('Failed to create message 😢')
     }
     updateLatestMessage(conversationId, message._id)
-    return message.populate('conversation')
+    return await message.populate(['conversation', 'sender'])
 }
 
 export const getConversationMessages = async (conversationId) => {
-    const messages = await Message.find({ conversation: conversationId })
+    const messages = await Message.find({ conversation: conversationId }).populate("sender", '-password')
     
     if(!messages){
         throw new Error('Failed to retrieve messages')

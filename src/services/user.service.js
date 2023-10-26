@@ -12,6 +12,6 @@ export const searchUserOnDb = async (keyword, userId) => {
     if (!users) {
         throw new Error('failed to search users')
     }
-
-    return users.filter(user => user._id !== userId)
+    
+    return users.filter(user => user._id.toString() !== userId.toString())
 }

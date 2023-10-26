@@ -1,7 +1,7 @@
 import app from "./app.js";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
-import socketServer from "./socket/socketServer.js";
+import { getSocket, initIo } from "./socket/socketServer.js";
 
 const PORT = process.env.PORT || 8000
 const { DATABASE_URL } = process.env
@@ -24,16 +24,11 @@ const server = app.listen(PORT, () => {
     console.log('process ID : ', process.pid)
 })
 
-const io = new Server(server, {
-    pingTimeout: 60000,
-    cors: {
-        origin: process.env.CLIENT_ENDPOINT
-    }
-})
+const io = initIo(server)
 
 io.on('connection', socket => {
     console.log('🔥 socket connected : ', socket.id)
-    socketServer(socket, io)
+    getSocket(socket, io)
 })
 
 const exceptionHandler = (error) => {

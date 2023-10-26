@@ -1,10 +1,14 @@
-let onlineUsers = []
+import { Server } from 'socket.io'
+export let onlineUsers = []
+let io;
+const CLIENT_ENDPOINT = process.env
 
-export default function (socket, io) {
+export const getSocket =  (socket, io) => {
 
     //User connection
     socket.on('user-connection', userId => {
         socket.join(userId)
+        console.log('user connexion : ', userId)
         onlineUsers.push({ userId, socketId: socket.id })
         io.emit('online-users', onlineUsers)
     })
@@ -17,6 +21,7 @@ export default function (socket, io) {
 
     //Send message
     socket.on('send-message', message => {
+        console.log('on est dans sendmessage : ', message)
         message.conversation.users.forEach(user => {
             if (user !== message.sender) {
                 console.log('on emit user : ', user)
@@ -83,4 +88,20 @@ export default function (socket, io) {
             socket.to(user.userId).emit('call ended')   // on lui emit simplement call ended, pas besoin de donnée
         }
     })
+}
+
+export const initIo = (httpServer) => {
+    io = new Server(httpServer, {
+        cors: {
+            CLIENT_ENDPOINT
+        }
+    })
+    return io
+}
+
+export const getIo = () => {
+    if (!io) {
+        throw new Error('IO is not initialized')
+    }
+    return io
 }
