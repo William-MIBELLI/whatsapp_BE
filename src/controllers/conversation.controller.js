@@ -5,6 +5,7 @@ import {
 } from "../services/conversation.service.js";
 
 export const createOpenConversation = async (req, res, next) => {
+    console.log('openConvo controller start')
     try {
         const sender_id = req.user.userId;
         const { receiver_id, convoId } = req.body;
@@ -13,6 +14,7 @@ export const createOpenConversation = async (req, res, next) => {
         if (!convo) {
             convo = await createConversation(sender_id, receiver_id);
         }
+        console.log('open convo controller end')
         res.json({ convo });
     } catch (error) {
         next(error);

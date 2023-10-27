@@ -4,26 +4,26 @@ import User from "../models/user.model.js";
 export const findConversation = async (sender_id, receiver_id, convoId) => {
 
     //const conversationId = convoId === 'undefined' ? 'w' : convoId
-    console.log('findconvo ', convoId )
+    console.log('findconvo start', convoId )
 
     const convos = await Conversation.find({
         _id: convoId,
-        $and: [
-            { users: { $elemMatch: { $eq: sender_id } } },
-            { users: { $elemMatch: { $eq: receiver_id } } },
-        ],
+        // $and: [
+        //     { users: { $elemMatch: { $eq: sender_id } } },
+        //     { users: { $elemMatch: { $eq: receiver_id } } },
+        // ],
     })
         .populate("users", "-password")
         .populate("latestMessage");
-    console.log('on passe la recherche')
     if (!convos) {
         return false;
     }
-
+    console.log('findconvo End')
     return convos[0];
 };
 
 export const createConversation = async (sender_id, receiver_id) => {
+    console.log('crteateconvo start')
     const senderUser = await User.findById(sender_id);
     const receiverUser = await User.findById(receiver_id);
     if (!senderUser || !receiverUser) {
@@ -36,7 +36,9 @@ export const createConversation = async (sender_id, receiver_id) => {
         admin: sender_id,
     });
     await convo.save();
-    return await convo.populate("users", "-password");
+    const populatedConvo = await convo.populate("users", "-password");
+    console.log('createconvo end')
+    return populatedConvo
 };
 
 export const getUserConversations = async (userId) => {

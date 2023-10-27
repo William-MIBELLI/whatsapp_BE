@@ -1,4 +1,4 @@
-import { createGroupOnDB, deleteGroupOnDB } from "../services/groupe.service.js"
+import { RemoveUserFromGroup, createGroupOnDB, deleteGroupOnDB } from "../services/groupe.service.js"
 
 export const createGroup = async (req, res, next) => {
 
@@ -27,6 +27,23 @@ export const deleteGroup = async (req, res, next) => {
             throw new Error('Only the group\'s admin can delete it')
         }
         deleteGroupOnDB(groupId)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const leaveGroup = async (req, res, next) => {
+
+
+    console.log('leave group')
+    const { groupId } = req.body
+    const { userId } = req.user
+
+    try {
+        const d = await RemoveUserFromGroup(groupId, userId)
+        if (d) {
+            res.status(201).json({msg: 'ok'})
+        }
     } catch (error) {
         next(error)
     }
