@@ -4,10 +4,10 @@ export const sendMessage = async (req, res, next) => {
     console.log('SEND MESSAGE')
     try {
         const senderId = req.user.userId
-        const { conversationId, content } = req.body
-        const { files } = req.files
+        const { conversationId, content, files } = req.body
+        //const { files } = req.files
         console.log('body dans /message' ,req.body)
-        const message = await createMessage({ senderId, conversationId, content }, files)
+        const message = await createMessage({ senderId, conversationId, content, files })
         res.status(201).json({message})
     } catch (error) {
         next(error)

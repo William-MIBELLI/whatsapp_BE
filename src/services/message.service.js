@@ -1,24 +1,32 @@
-import Message from "../models/message.model.js"
-import { updateLatestMessage } from "./conversation.service.js"
+import Message from "../models/message.model.js";
+import { updateLatestMessage } from "./conversation.service.js";
 
-export const createMessage = async (messageData, files) => {
-    const { senderId, conversationId, content } = messageData
-    const message = await Message.create({ sender: senderId, message: content, conversation: conversationId, files })
-    await message.save()
+export const createMessage = async (messageData) => {
+    const { senderId, conversationId, content, files = [] } = messageData;
+    console.log('file dans messagedata : ', files)
+    const message = await Message.create({
+        sender: senderId,
+        message: content,
+        conversation: conversationId,
+        files: JSON.parse(files),
+    });
+    await message.save();
 
     if (!message) {
-        throw new Error('Failed to create message 😢')
+        throw new Error("Failed to create message 😢");
     }
-    updateLatestMessage(conversationId, message._id)
-    return await message.populate(['conversation', 'sender'])
-}
+    updateLatestMessage(conversationId, message._id);
+    return await message.populate(["conversation", "sender"]);
+};
 
 export const getConversationMessages = async (conversationId) => {
-    const messages = await Message.find({ conversation: conversationId }).populate("sender", '-password')
-    
-    if(!messages){
-        throw new Error('Failed to retrieve messages')
+    const messages = await Message.find({
+        conversation: conversationId,
+    }).populate("sender", "-password");
+
+    if (!messages) {
+        throw new Error("Failed to retrieve messages");
     }
 
-    return messages
-}
+    return messages;
+};

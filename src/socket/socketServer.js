@@ -21,10 +21,8 @@ export const getSocket =  (socket, io) => {
 
     //Send message
     socket.on('send-message', message => {
-        console.log('on est dans sendmessage : ', message)
         message.conversation.users.forEach(user => {
             if (user !== message.sender) {
-                console.log('on emit user : ', user)
                 socket.to(user).emit('receive-message', message)
             }
         })
@@ -53,39 +51,40 @@ export const getSocket =  (socket, io) => {
     })
 
     //Quand un user lance un appel
-    socket.on('start call', data => {
+    socket.on('callUser', data => {
 
-        const { caller, receiver, signalData } = data
+        const { caller, receiverId, signalData } = data
 
-        const user = onlineUsers.find(o => o.userId === receiver._id)
+        const user = onlineUsers.find(o => o.userId === receiverId)
 
         if (user) {
-            console.log('user trouvé ', user, receiver)
-            return socket.to(user.userId).emit('call incoming', caller, signalData)
+            //console.log('user trouvé ', user, receiver)
+            return socket.to(user.userId).emit('callIncoming', caller, signalData)
         }
 
-        console.log('utilisateur introuvable')
+        console.log('utilisateur introuvable : ', onlineUsers)
     })
 
 
     //on reçoit les infos de lutilisateur qui accepte l'appel ainbsi que son signal
-    socket.on('accept call', data => {
-        const { caller, signal } = data
+    socket.on('acceptCall', data => {
+        const { callerId, signal } = data
         
-        const user = onlineUsers.find(o => o.userId === caller._id)
+        const user = onlineUsers.find(o => o.userId === callerId)
 
         if (user) {
-            socket.to(user.userId).emit('call accepted', signal)    //on emit le caller en lui passant le signal du receiver
+            socket.to(user.userId).emit('callAccepted', signal)    //on emit le caller en lui passant le signal du receiver
         }
     })
 
     //on récupère les infos de lutilisateur à notifier pour le call fini
-    socket.on('end call', (u) => {
-
+    socket.on('endCall', (u) => {
+        console.log('endcall', u)
         const user = onlineUsers.find(o => o.userId === u._id)
 
         if (user) {
-            socket.to(user.userId).emit('call ended')   // on lui emit simplement call ended, pas besoin de donnée
+            console.log('on, emit callEnded a ', u.name)
+            socket.to(user.userId).emit('callEnded')   // on lui emit simplement call ended, pas besoin de donnée
         }
     })
 }

@@ -48,3 +48,17 @@ export const leaveGroup = async (req, res, next) => {
         next(error)
     }
 }
+
+export const removeUser = async (req, res, next) => {
+
+    const { userIdToDelete, groupId } = req.body
+    console.log(req.body)
+    try {
+        const r = await RemoveUserFromGroup(groupId, userIdToDelete)
+        if (r) {
+            res.json({msg: 'ok'}) 
+        }
+    } catch (error) {
+        next(error)
+    }
+}
