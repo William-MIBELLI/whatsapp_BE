@@ -56,7 +56,7 @@ export const removeUser = async (req, res, next) => {
     try {
         const r = await RemoveUserFromGroup(groupId, userIdToDelete)
         if (r) {
-            res.json({msg: 'ok'}) 
+            res.status(201).json({msg: 'ok'}) 
         }
     } catch (error) {
         next(error)

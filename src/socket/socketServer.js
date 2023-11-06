@@ -29,15 +29,17 @@ export const getSocket =  (socket, io) => {
     })
 
     //Quand un user est en train de taper
-    socket.on('typing', conversationId => {
-        console.log('typing OK : ', conversationId)
-        socket.to(conversationId).emit('typing', conversationId)
+    socket.on('typing', data => {
+        const { conversationId, userId} = data
+        console.log('typing OK : ', conversationId, userId)
+        socket.to(userId).emit('typing', conversationId)
     })
 
     //Quand l'user ne tape plus
-    socket.on('stop typing', conversationId => {
+    socket.on('stop typing', data => {
+        const { conversationId, userId} = data
         console.log('stop typing : ', conversationId)
-        socket.to(conversationId).emit('stop typing', conversationId)
+        socket.to(userId).emit('stop typing', conversationId)
     })
 
     //Remove user from onlineUsers when disconnection
