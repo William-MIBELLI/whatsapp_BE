@@ -13,7 +13,7 @@ router.use('/conversation', conversationRouter)
 
 router.use('/message', messageRouter)
 
-router.use('/search', userRouter)
+router.use('/user', userRouter)
 
 router.use('/group', groupRouter)
 

@@ -15,3 +15,15 @@ export const searchUserOnDb = async (keyword, userId) => {
     
     return users.filter(user => user._id.toString() !== userId.toString())
 }
+
+export const updateStatusOnDb = async (userId, status) => {
+    
+    const user = await User.findById(userId)
+    if (!user) {
+        throw new Error('no user with this id')
+    }
+    user.status = status
+    await user.save()
+    console.log('user : ', user)
+    return user
+}
