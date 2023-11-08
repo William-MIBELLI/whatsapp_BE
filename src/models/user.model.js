@@ -28,6 +28,12 @@ const userSchema = mongoose.Schema(
             type: String,
             default: "New on app",
         },
+        resetToken: {
+            type: String
+        },
+        resetTokenExpiration: {
+            type: Date
+        }
     },
     {
         timestamps: true,

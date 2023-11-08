@@ -1,4 +1,4 @@
-import { createUser, loginUser } from "../services/auth.services.js";
+import { createUser, forgetPasswordService, loginUser, sendEmailForResetPassword } from "../services/auth.services.js";
 import { createToken } from "../services/token.services.js";
 
 export const register = async (req, res, next) => {
@@ -14,7 +14,7 @@ export const register = async (req, res, next) => {
         
         const user = await createUser({
             name,
-            email,
+            email: email.toLowerCase(),
             password,
             confirmPassword,
             status,
@@ -71,3 +71,22 @@ export const logout = async (req, res, next) => {
         next(error);
     }
 };
+
+export const forgetPassword = async (req, res, next) => {
+
+    const { email } = req.body
+    console.log('email : ', email)
+    try {
+        const resetToken = await forgetPasswordService(email)
+        if (!resetToken) {
+            throw new Error('Cant setup tokens on user for reset password')
+        }
+        const sendMail = await sendEmailForResetPassword(email, resetToken)
+        if (!sendMail) {
+            throw new Error('Failed to send email')
+        }
+        res.status(200).json({msg: 'allgood', email})
+    } catch (error) {
+        next(error)
+    }
+}
