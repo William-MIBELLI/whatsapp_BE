@@ -1,5 +1,5 @@
 import express from 'express'
-import { forgetPassword, login, logout, register } from '../controllers/auth.controller.js'
+import { changePassword, forgetPassword, login, logout, register, resetPassword } from '../controllers/auth.controller.js'
 import { auhtMiddleware } from '../middlewares/auth.middleware.js'
 
 const router = express.Router()
@@ -15,5 +15,9 @@ router.get('/authmid',auhtMiddleware, (req, res, next) => {
 })
 
 router.put('/forget-password', forgetPassword)
+
+router.put('/reset-password', resetPassword)
+
+router.put('/change-password', auhtMiddleware, changePassword)
 
 export default router

@@ -1,4 +1,4 @@
-import { createUser, forgetPasswordService, loginUser, sendEmailForResetPassword } from "../services/auth.services.js";
+import { changePasswordOnDb, createUser, forgetPasswordService, loginUser, resetPasswordOnDb, sendEmailForResetPassword } from "../services/auth.services.js";
 import { createToken } from "../services/token.services.js";
 
 export const register = async (req, res, next) => {
@@ -86,6 +86,40 @@ export const forgetPassword = async (req, res, next) => {
             throw new Error('Failed to send email')
         }
         res.status(200).json({msg: 'allgood', email})
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const resetPassword = async (req, res, next) => {
+    const { email, password, confirm, token } = req.body
+    try {
+        if (password !== confirm) {
+            throw new Error('Password dont match confirmation')
+        }
+        const r = await resetPasswordOnDb(email, password, token)
+        if (!r) {
+            throw new Error('Cant update password')
+        }
+        res.status(201).json({})
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const changePassword = async (req, res, next) => {
+    const { password, newPassword, confirmNewPassword } = req.body
+    const { userId } = req.user
+    console.log(req.body)
+    try {
+        if (newPassword !== confirmNewPassword) {
+            throw new Error('Password have to match.')
+        }
+        const r = await changePasswordOnDb(userId, password, newPassword)
+        if (!r) {
+            throw new Error('Cant change password on db.')
+        }
+        res.status(201).json({})
     } catch (error) {
         next(error)
     }

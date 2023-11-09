@@ -108,24 +108,82 @@ export const forgetPasswordService = async (email) => {
 };
 
 export const sendEmailForResetPassword = async (email, token) => {
-
     const { SENDGRID_API_KEY, CLIENT_ENDPOINT } = process.env;
     const sgMail = new MailService(); // On initialise le mailer
     sgMail.setApiKey(SENDGRID_API_KEY);
 
-    const message = { //On crée le template de notre email
+    const message = {
+        //On crée le template de notre email
         to: email,
         from: "william.mibelli@gmail.com",
         subject: "Reset password on WhatsUP",
-        text: `For reset your password, click this link and follow instructions : ${CLIENT_ENDPOINT}/reset-password/${token}:`,
-        
+        text: `For reset your password, click this link and follow instructions : ${CLIENT_ENDPOINT}/reset-password/${token}`,
+        html: `
+        <div style="background-color:#111B21; display: flex; justify-content: center; align-items: center;" >
+            <h2 style="color: #00A884; margin: auto;">WhatsUP</h2>
+            <p style="color:#8696A0; margin: auto;" >Hello there, we receive a request for reseting your password !</p>
+            <p style="color:#8696A0; margin: auto;" >Just click on this <a target="_blank" style="color: white; font-weight: bold; text-decoration: none;" href="${CLIENT_ENDPOINT}/reset-password/${token}">link</a>, its that easy 😎<p>
+            <p style="color:#8696A0; margin: auto;">See you 👋</p>
+        </div>
+        `,
     };
 
-    const r = await sgMail.send(message) // On envoie le mail
-    console.log('r dans sgmail : ', r)
+    const r = await sgMail.send(message); // On envoie le mail
+    console.log("r dans sgmail : ", r);
 
     if (r) {
-        return true
+        return true;
     }
-    return false
+    return false;
+};
+
+export const resetPasswordOnDb = async (email, password, token) => {
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+        //Si pas d'user avec cet email
+        throw new Error("No user with this email");
+    }
+    const { resetToken, resetTokenExpiration } = user;
+    if (resetToken !== token) {
+        //Si le resetToken ne correspond pas avec celui reçu
+        throw new Error("This token is invalid");
+    }
+
+    if (Date.now() > resetTokenExpiration) {
+        //Si le resetTokenExpiration est dépassé
+        throw new Error("This token is out of date, send a new request");
+    }
+    //Si tous les tests sont passés, on hash le nouveau password, on supprime les tokens et on save
+    const hashedPassword = await bcrypt.hash(password, 12);
+    user.password = hashedPassword;
+    user.resetToken = null;
+    user.resetTokenExpiration = null;
+    await user.save();
+
+    return true;
+};
+
+export const changePasswordOnDb = async (userId, password, newPassword) => {
+    const user = await User.findById(userId);
+    console.log('password dans services : ', password)
+    if (!user) {
+        //On vérifie que l'user avec cet ID existe
+        throw new Error("No user with this id");
+    }
+    const verifiedPassword = await bcrypt.compare(password, user.password);
+    if (!verifiedPassword) {
+        //On vérifie que le password correspond
+        throw new Error("Invalid password : ", password);
+    }
+    //On hash le newPassword
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    const r = await user.save();
+
+    if (r === user) {
+        return true;
+    }
+
+    return false;
 };
