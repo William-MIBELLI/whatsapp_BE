@@ -24,6 +24,9 @@ const userSchema = mongoose.Schema(
             type: String,
             default: "",
         },
+        pictureId: {
+            type:String
+        },
         status: {
             type: String,
             default: "New on app",

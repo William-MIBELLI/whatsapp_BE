@@ -3,7 +3,7 @@ import { createToken } from "../services/token.services.js";
 
 export const register = async (req, res, next) => {
     try {
-        const { name, email, password, confirmPassword, status, pictureUrl } = req.body;
+        const { name, email, password, confirmPassword, status, picture } = req.body;
         //const picture = req.files.picture ? req.files.picture[0] : undefined
         //console.log('req : ', req)
         //console.log('picture dans register : ', req.files?.picture[0])
@@ -18,7 +18,7 @@ export const register = async (req, res, next) => {
             password,
             confirmPassword,
             status,
-            pictureUrl
+            picture
         });
         const accessToken = await createToken(
             { userId: user._id },
@@ -34,7 +34,9 @@ export const register = async (req, res, next) => {
 };
 
 export const login = async (req, res, next) => {
+
     const { email, password } = req.body;
+    
     try {
         const user = await loginUser(email, password);
         if (!user) {

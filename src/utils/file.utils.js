@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-export const deletePicture = async (pictureUrl) => {
+export const deleteFile = async (pictureUrl) => {
 
     const __dirname = path.resolve();
     const filePath = path.join(__dirname, pictureUrl)

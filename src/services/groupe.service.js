@@ -1,7 +1,7 @@
 import Conversation from "../models/conversation.model.js"
 import Message from "../models/message.model.js"
 import { getIo } from "../socket/socketServer.js"
-import { deletePicture } from "../utils/file.utils.js"
+import { deleteFile } from "../utils/file.utils.js"
 
 
 export const createGroupOnDB = async (groupName, users, admin, pictureUrl = null) => {
@@ -28,8 +28,8 @@ export const deleteGroupOnDB = async (groupId) => {
     }
     const { users, pictureUrl } = group
 
-    const del = deletePicture(pictureUrl) // On supprime la photo
-    console.log(del)
+    const del = await deleteFile(pictureUrl) // On supprime la photo
+    console.log('del : ',del) 
     
     await Conversation.findByIdAndDelete(groupId) // On supprime la convo
     await Message.deleteMany({ conversation: groupId }) // Et tous les messages

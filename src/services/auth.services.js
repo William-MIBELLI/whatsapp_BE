@@ -11,8 +11,10 @@ export const createUser = async (userData) => {
         password,
         confirmPassword,
         status = null,
-        pictureUrl = null,
+        picture
     } = userData;
+    const { secure_url, public_id } = JSON.parse(picture)
+    console.log('picture dans createuser : ', picture)
     const { DEFAULT_STATUS, DEFAULT_PICTURE_URL } = process.env;
 
     if (!name || !email || !password || !confirmPassword) {
@@ -55,7 +57,8 @@ export const createUser = async (userData) => {
         email,
         password,
         status: status || DEFAULT_STATUS,
-        pictureUrl: pictureUrl || DEFAULT_PICTURE_URL,
+        pictureUrl: secure_url || DEFAULT_PICTURE_URL,
+        pictureId: public_id || undefined
     });
 
     await user.save();
