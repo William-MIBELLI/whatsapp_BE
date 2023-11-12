@@ -3,6 +3,8 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { MailService } from "@sendgrid/mail";
+import { deleteConvoByUserId } from './conversation.service.js'
+
 
 export const createUser = async (userData) => {
     const {
@@ -11,10 +13,10 @@ export const createUser = async (userData) => {
         password,
         confirmPassword,
         status = null,
-        picture
+        picture,
     } = userData;
-    const { secure_url, public_id } = JSON.parse(picture)
-    console.log('picture dans createuser : ', picture)
+    const { secure_url, public_id } = picture ? JSON.parse(picture) : {};
+    console.log("picture dans createuser : ", picture);
     const { DEFAULT_STATUS, DEFAULT_PICTURE_URL } = process.env;
 
     if (!name || !email || !password || !confirmPassword) {
@@ -58,7 +60,7 @@ export const createUser = async (userData) => {
         password,
         status: status || DEFAULT_STATUS,
         pictureUrl: secure_url || DEFAULT_PICTURE_URL,
-        pictureId: public_id || undefined
+        pictureId: public_id || undefined,
     });
 
     await user.save();
@@ -169,7 +171,7 @@ export const resetPasswordOnDb = async (email, password, token) => {
 
 export const changePasswordOnDb = async (userId, password, newPassword) => {
     const user = await User.findById(userId);
-    console.log('password dans services : ', password)
+    console.log("password dans services : ", password);
     if (!user) {
         //On vérifie que l'user avec cet ID existe
         throw new Error("No user with this id");
@@ -189,4 +191,17 @@ export const changePasswordOnDb = async (userId, password, newPassword) => {
     }
 
     return false;
+};
+
+export const deleleUserOnDb = async (userId) => {
+    console.log('suerid dans userservices : ', userId)
+    const { deletedCount } = await User.deleteOne({ _id: userId });
+    if (deletedCount !== 1) {
+        throw new Error('Cant delete this user ', userId)
+    }
+    const r = await deleteConvoByUserId(userId)
+    if (r) {
+        return true 
+    }
+    return false
 };

@@ -42,10 +42,20 @@ export const getSocket =  (socket, io) => {
         socket.to(userId).emit('stop typing', conversationId)
     })
 
-    //Remove user from onlineUsers when disconnection
+    //Remove user from onlineUsers when SOCKET DISCONNECTION
     socket.on('disconnect', () => {
         const newOnlineUsers = onlineUsers.filter(obj => {
             return obj.socketId !== socket.id
+        })
+        onlineUsers = newOnlineUsers
+        console.log('DISCONNECT SOCKET')
+        io.emit('online-users', onlineUsers)
+    })
+
+    //Remove user from onlineUsers when USER LOGOUT
+    socket.on('user-logout', userId => {
+        const newOnlineUsers = onlineUsers.filter(obj => {
+            return obj.userId !== userId
         })
         onlineUsers = newOnlineUsers
         console.log('DISCONNECT USER')
@@ -66,7 +76,6 @@ export const getSocket =  (socket, io) => {
 
         console.log('utilisateur introuvable : ', onlineUsers)
     })
-
 
     //on reçoit les infos de lutilisateur qui accepte l'appel ainbsi que son signal
     socket.on('acceptCall', data => {

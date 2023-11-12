@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Message from "./message.model.js";
 
 const conversationSchema = mongoose.Schema(
     {
@@ -27,8 +28,8 @@ const conversationSchema = mongoose.Schema(
         },
         pictureUrl: {
             type: String,
-            required: false
-        }
+            required: false,
+        },
     },
     {
         timestamps: true,

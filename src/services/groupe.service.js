@@ -44,7 +44,7 @@ export const deleteGroupOnDB = async (groupId) => {
 
 export const RemoveUserFromGroup = async (groupId, userId) => {
 
-    const group = await Conversation.findById(groupId) // On cherche la conversation vi son Id
+    const group = await Conversation.findById(groupId) // On cherche la conversation via son Id
     const io = getIo()
     if (!group || !group.isGroup) { //Si on trouve pas ou que ce n'est pas un group
         throw new Error('No Conversation with this id or not a group')

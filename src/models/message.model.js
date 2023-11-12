@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { v2 as cloudinary } from 'cloudinary'
 
 const messageSchema = mongoose.Schema({
     sender: {
@@ -19,6 +20,7 @@ const messageSchema = mongoose.Schema({
 }, {
     timestamps: true
 });
+
 
 const Message =
     mongoose.models.Message || mongoose.model("message", messageSchema);

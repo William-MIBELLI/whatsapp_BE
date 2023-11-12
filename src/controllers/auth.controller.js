@@ -1,17 +1,10 @@
-import { changePasswordOnDb, createUser, forgetPasswordService, loginUser, resetPasswordOnDb, sendEmailForResetPassword } from "../services/auth.services.js";
+import { changePasswordOnDb, createUser, deleleUserOnDb, forgetPasswordService, loginUser, resetPasswordOnDb, sendEmailForResetPassword } from "../services/auth.services.js";
 import { createToken } from "../services/token.services.js";
 
 export const register = async (req, res, next) => {
     try {
         const { name, email, password, confirmPassword, status, picture } = req.body;
-        //const picture = req.files.picture ? req.files.picture[0] : undefined
-        //console.log('req : ', req)
-        //console.log('picture dans register : ', req.files?.picture[0])
-        //let pictureUrl = null
-        // if (picture) {
-        //     pictureUrl = picture.path
-        // }
-        
+
         const user = await createUser({
             name,
             email: email.toLowerCase(),
@@ -122,6 +115,21 @@ export const changePassword = async (req, res, next) => {
             throw new Error('Cant change password on db.')
         }
         res.status(201).json({})
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteUser = async (req, res, next) => {
+    const { userId } = req.user
+    //const { password } = req.body
+    console.log('user id dans controller : ', userId)
+    try {
+        const r = await deleleUserOnDb(userId)
+        if (!r) {
+            throw new Error('something goes wrong')
+        }
+        res.status(201).json({msg: 'allgood'})
     } catch (error) {
         next(error)
     }

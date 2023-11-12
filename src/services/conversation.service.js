@@ -1,5 +1,10 @@
 import Conversation from "../models/conversation.model.js";
 import User from "../models/user.model.js";
+import {
+    deleteMessageByConvoId,
+    deleteMessageByUserId,
+} from "./message.service.js";
+import { getIo } from "../socket/socketServer.js";
 
 export const findConversation = async (sender_id, receiver_id, convoId) => {
     let convo;
@@ -57,10 +62,10 @@ export const updateLatestMessage = async (conversationId, messageId) => {
         { _id: conversationId },
         { latestMessage: messageId }
     );
-    await convo.save();
     if (!convo) {
         throw new Error("Failed to update latestMessage");
     }
+    await convo.save();
 
     return convo;
 };
@@ -89,4 +94,33 @@ export const findConvoByUsers = async (users) => {
         return convo;
     }
     return false;
+};
+
+export const deleteConvoByUserId = async (userId) => {
+    const io = getIo();
+    const convos = await Conversation.find({
+        // On récupère toutes les convo de l'user
+        users: { $elemMatch: { $eq: userId } },
+    });
+
+    convos.forEach(async (convo) => {
+        if (convo.isGroup) {
+            //Si la conversation est un group, on remove juste le user
+            await RemoveUserFromGroup(convo._id, userId);
+        } else {
+            await Conversation.deleteOne({ _id: convo._id }); // Sinon on suprimme la conversation
+            await deleteMessageByConvoId(convo._id); // On supprime avec la convoId pour supprimer TOUS les message de la convo, pas seulement celui de l'user deleted
+        }
+        await deleteMessageByUserId(userId);
+
+         // On emit les users de la convo pour que le front se mette a jour
+        convo.users.forEach((user) => {
+            console.log("on emit a : ", user);
+            io.to(convo._id.toString()).emit("user-deleted", {
+                userId,
+                convoId: convo._id,
+            });
+        });
+    });
+    return true;
 };

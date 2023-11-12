@@ -1,7 +1,7 @@
 import app from "./app.js";
 import mongoose from "mongoose";
 import { Server } from "socket.io";
-import { getSocket, initIo } from "./socket/socketServer.js";
+import { getSocket, initIo, onlineUsers } from "./socket/socketServer.js";
 
 const PORT = process.env.PORT || 8000;
 const { DATABASE_URL } = process.env;

@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
+import Conversation from "./conversation.model.js";
+import { RemoveUserFromGroup } from "../services/groupe.service.js";
+import { getIo } from "../socket/socketServer.js";
 
 const userSchema = mongoose.Schema(
     {
@@ -25,18 +28,18 @@ const userSchema = mongoose.Schema(
             default: "",
         },
         pictureId: {
-            type:String
+            type: String,
         },
         status: {
             type: String,
             default: "New on app",
         },
         resetToken: {
-            type: String
+            type: String,
         },
         resetTokenExpiration: {
-            type: Date
-        }
+            type: Date,
+        },
     },
     {
         timestamps: true,
@@ -44,16 +47,17 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-    try {
-        if (this.isNew) {
+    try {     
+        if (this.isNew) { //Si c'est une création , on hashe le password pour le stocker
             const hashedPassword = await bcrypt.hash(this.password, 12);
             this.password = hashedPassword;
-        }
+        } 
         next();
     } catch (error) {
         next(error);
     }
 });
+
 
 const User = mongoose.models.User || mongoose.model("user", userSchema);
 
