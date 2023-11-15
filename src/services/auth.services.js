@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { MailService } from "@sendgrid/mail";
 import { deleteConvoByUserId } from './conversation.service.js'
+import { deleteFileOnCloud } from "../utils/file.utils.js";
 
 
 export const createUser = async (userData) => {
@@ -193,13 +194,20 @@ export const changePasswordOnDb = async (userId, password, newPassword) => {
     return false;
 };
 
-export const deleleUserOnDb = async (userId) => {
-    console.log('suerid dans userservices : ', userId)
+export const deleleUserOnDb = async (userId, email, password) => {
+    
+    const user = await loginUser(email, password)
+    if (!user || user._id.toString() !== userId) { // Les logs de lutilisateur ne sont pas bons ou l'id ne correspond pas
+        throw new Error('Unvalid credentials.')
+    }
+    if (user.pictureId) { // Si l'user a une photo de profil, on la delete
+        await deleteFileOnCloud(user.pictureId)
+    }
     const { deletedCount } = await User.deleteOne({ _id: userId });
-    if (deletedCount !== 1) {
+    if (deletedCount !== 1) { // Si on a pas pu delete luser de la db, on throw un erreur pour ne pas delete les convos & messages
         throw new Error('Cant delete this user ', userId)
     }
-    const r = await deleteConvoByUserId(userId)
+    const r = await deleteConvoByUserId(userId) // Sinon on delete les conversations de l'user
     if (r) {
         return true 
     }

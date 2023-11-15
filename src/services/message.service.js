@@ -1,6 +1,6 @@
 import Message from "../models/message.model.js";
+import { deleteFileOnCloud } from "../utils/file.utils.js";
 import { updateLatestMessage } from "./conversation.service.js";
-import { v2 as cloudinary } from 'cloudinary'
 
 export const createMessage = async (messageData) => {
     const { senderId, conversationId, content, files = [] } = messageData;
@@ -53,20 +53,10 @@ export const deleteMessageByConvoId = async (convoId) => {
 
 export const deleteMessageOnDb = async (messages) => {
 
-    const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = process.env;
-
-    cloudinary.config({ //On configure cloudinary
-        cloud_name: CLOUD_NAME,
-        api_key: CLOUD_API_KEY,
-        api_secret: CLOUD_API_SECRET,
-        secure: true,
-    });
-    
     messages.forEach(async(message) => {
         if (message.files.length > 0) { // Si le message contient des fichiers
             message.files.forEach(async (file) => { //On boucle sur chaque fichier
-                const r = await cloudinary.uploader.destroy(file.public_id) //Avec le public_id, on call destroy()
-                console.log('response de cloudinary.destroy : ', r)
+                await deleteFileOnCloud(file.public_id) // On delete le fichier dans cloudinary
             });
         }
         await Message.findByIdAndDelete(message._id)

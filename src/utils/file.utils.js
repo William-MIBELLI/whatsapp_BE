@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { v2 as cloudinary } from 'cloudinary'
 
 export const deleteFile = async (pictureUrl) => {
 
@@ -20,4 +21,23 @@ export const deleteFile = async (pictureUrl) => {
     }
 
     return 'Picture with this url not found'
+}
+
+
+export const deleteFileOnCloud = async (public_id) => {
+    const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = process.env;
+    cloudinary.config({
+        cloud_name: CLOUD_NAME,
+        api_key: CLOUD_API_KEY,
+        api_secret: CLOUD_API_SECRET,
+        secure: true,
+    });
+    try {
+        const r = await cloudinary.uploader.destroy(public_id);
+        console.log('suppression danse le cloud : ', r)
+        return true
+    } catch (error) {
+        console.log(error)
+        return false
+    }
 }

@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import { v2 as cloudinary } from "cloudinary";
+import { deleteFileOnCloud } from "../utils/file.utils.js";
 
 export const searchUserOnDb = async (keyword, userId) => {
     const users = await User.find({
@@ -28,7 +28,7 @@ export const updateStatusOnDb = async (userId, status) => {
 };
 
 export const udpateUserPicture = async (userId, pictureData) => {
-    const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = process.env;
+
     const user = await User.findById(userId);
 
     const { secure_url, public_id } = JSON.parse(pictureData); //On récupère les infos reçues depuis le front
@@ -38,16 +38,10 @@ export const udpateUserPicture = async (userId, pictureData) => {
         //Si pas duser avec cet id on return
         throw new Error("No user with this id");
     }
-    cloudinary.config({
-        cloud_name: CLOUD_NAME,
-        api_key: CLOUD_API_KEY,
-        api_secret: CLOUD_API_SECRET,
-        secure: true,
-    });
     const pictureIdToDelete = user.pictureId;
     if (pictureIdToDelete) {
         //On delete lancienne picture sur le cloud via son public_id
-        await cloudinary.uploader.destroy(pictureIdToDelete);
+        await deleteFileOnCloud(pictureIdToDelete)
     }
     user.pictureUrl = secure_url;
     user.pictureId = public_id;

@@ -122,10 +122,9 @@ export const changePassword = async (req, res, next) => {
 
 export const deleteUser = async (req, res, next) => {
     const { userId } = req.user
-    //const { password } = req.body
-    console.log('user id dans controller : ', userId)
+    const { email, password } = req.body
     try {
-        const r = await deleleUserOnDb(userId)
+        const r = await deleleUserOnDb(userId, email, password)
         if (!r) {
             throw new Error('something goes wrong')
         }
