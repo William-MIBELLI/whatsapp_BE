@@ -1,6 +1,6 @@
 import Message from "../models/message.model.js";
 import { deleteFileOnCloud } from "../utils/file.utils.js";
-import { updateLatestMessage } from "./conversation.service.js";
+import { updateLatestMessage, updateUnreadMsg } from "./conversation.service.js";
 
 export const createMessage = async (messageData) => {
     const { senderId, conversationId, content, files = [] } = messageData;
@@ -19,6 +19,10 @@ export const createMessage = async (messageData) => {
     const r = await updateLatestMessage(conversationId, message._id);
     if (typeof(r) === Error) { //Si on a pas pu update le convo, on return une error
         throw r
+    }
+    const rep = await updateUnreadMsg(conversationId, senderId)
+    if (!rep) {
+        throw new Error('Cant update unreadmsg')
     }
     return await message.populate(["conversation", "sender"]);
 };

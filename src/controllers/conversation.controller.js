@@ -2,6 +2,8 @@ import {
     createConversation,
     findConversation,
     getUserConversations,
+    resetUnreadMsg,
+    updateUnreadMsg,
 } from "../services/conversation.service.js";
 
 export const createOpenConversation = async (req, res, next) => {
@@ -14,6 +16,7 @@ export const createOpenConversation = async (req, res, next) => {
         if (!convo) {
             convo = await createConversation(sender_id, receiver_id);
         }
+        await resetUnreadMsg(convo._id, sender_id)
         console.log('open convo controller end')
         res.json({ convo });
     } catch (error) {

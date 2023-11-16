@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import Message from "./message.model.js";
 
 const conversationSchema = mongoose.Schema(
@@ -30,6 +30,17 @@ const conversationSchema = mongoose.Schema(
             type: String,
             required: false,
         },
+        unreadByUsers: [
+            {
+                userId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'user'
+                },
+                msgCount: {
+                    type: Number
+                }
+            }
+        ]
     },
     {
         timestamps: true,

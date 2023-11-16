@@ -8,12 +8,17 @@ export const createGroupOnDB = async (groupName, users, admin, pictureUrl = null
     const { DEFAULT_GROUP_URL } = process.env
     
     console.log('url du default pics : ', DEFAULT_GROUP_URL)
+    const unreadByUsers = users.map(user => {
+        return {userId: user, msgCount: 0}
+    })
+    unreadByUsers.push({userId: admin, msgCount: 0})
     const group = new Conversation({
         name: groupName,
         isGroup: true,
         users: [...users, admin],
         admin,
-        pictureUrl:  DEFAULT_GROUP_URL
+        pictureUrl: DEFAULT_GROUP_URL,
+        unreadByUsers
     })
 
     await group.save()

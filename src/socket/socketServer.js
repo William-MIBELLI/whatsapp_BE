@@ -1,4 +1,5 @@
 import { Server } from 'socket.io'
+import { resetUnreadMsg } from '../services/conversation.service.js';
 export let onlineUsers = []
 let io;
 const CLIENT_ENDPOINT = process.env
@@ -27,6 +28,13 @@ export const getSocket =  (socket, io) => {
             }
         })
     })
+
+    //reset unreadMsg quand un user ouvre la convo
+    socket.on('reset-unreadByUsers', async (data) => {
+        console.log('reset unread from socket')
+        const { convoId, userId } = data
+        await resetUnreadMsg(convoId, userId)
+    } )
 
     //Quand un user est en train de taper
     socket.on('typing', data => {

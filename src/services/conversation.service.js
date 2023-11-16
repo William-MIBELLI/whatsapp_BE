@@ -37,6 +37,10 @@ export const createConversation = async (sender_id, receiver_id) => {
         isGroup: false,
         users: [sender_id, receiver_id],
         admin: sender_id,
+        unreadByUsers: [
+            { userId: sender_id, msgCount: 0 },
+            { userId: receiver_id, msgCount: 0 },
+        ],
     });
     await convo.save();
     const populatedConvo = await convo.populate("users", "-password");
@@ -68,6 +72,53 @@ export const updateLatestMessage = async (conversationId, messageId) => {
     await convo.save();
 
     return convo;
+};
+
+export const updateUnreadMsg = async (conversationId, sender_id) => {
+    try {
+        const convo = await Conversation.findById(conversationId);
+        if (!convo) {
+            //Si pas de convo , on return
+            throw new Error("No convo with this id ", convo_id);
+        }
+        const updatedUnreadByUser = convo.unreadByUsers.map((item) => {
+            //On map le unreadByUser et on ajoute 1 a tous les users sauf le sender
+            return item.userId.toString() === sender_id.toString()
+                ? item
+                : { ...item, msgCount: item.msgCount + 1 };
+        });
+        convo.unreadByUsers = updatedUnreadByUser; //On save la convo avec la tableau mis à jour
+        const r = await convo.save();
+        if (r === convo) {
+            //On vérifie que lupdate a réussi
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+};
+
+export const resetUnreadMsg = async (conversationId, userId) => {
+    try {
+        const r = await Conversation.findOneAndUpdate(
+            { _id: conversationId, "unreadByUsers.userId": userId },
+            {
+                $set: {
+                    'unreadByUsers.$.msgCount' : 0
+                }
+            }
+        );
+        if (r ) {
+            console.log("reset unread message OK");
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
 };
 
 export const findConvoById = async (convoId) => {
@@ -113,7 +164,7 @@ export const deleteConvoByUserId = async (userId) => {
         }
         await deleteMessageByUserId(userId);
 
-         // On emit les users de la convo pour que le front se mette a jour
+        // On emit les users de la convo pour que le front se mette a jour
         convo.users.forEach((user) => {
             console.log("on emit a : ", user);
             io.to(convo._id.toString()).emit("user-deleted", {
