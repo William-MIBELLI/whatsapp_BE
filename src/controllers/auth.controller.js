@@ -53,7 +53,6 @@ export const login = async (req, res, next) => {
             "30d",
             process.env.REFRESH_TOKEN_SECRET
         );
-        console.log("refreshToken : ", refreshToken);
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             path: "/auth/refreshToken",
