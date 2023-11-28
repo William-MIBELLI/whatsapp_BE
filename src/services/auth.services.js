@@ -17,7 +17,6 @@ export const createUser = async (userData) => {
         picture,
     } = userData;
     const { secure_url, public_id } = picture ? JSON.parse(picture) : {};
-    console.log("picture dans createuser : ", picture);
     const { DEFAULT_STATUS, DEFAULT_PICTURE_URL } = process.env;
 
     if (!name || !email || !password || !confirmPassword) {
@@ -135,7 +134,6 @@ export const sendEmailForResetPassword = async (email, token) => {
     };
 
     const r = await sgMail.send(message); // On envoie le mail
-    console.log("r dans sgmail : ", r);
 
     if (r) {
         return true;
@@ -172,7 +170,6 @@ export const resetPasswordOnDb = async (email, password, token) => {
 
 export const changePasswordOnDb = async (userId, password, newPassword) => {
     const user = await User.findById(userId);
-    console.log("password dans services : ", password);
     if (!user) {
         //On vérifie que l'user avec cet ID existe
         throw new Error("No user with this id");

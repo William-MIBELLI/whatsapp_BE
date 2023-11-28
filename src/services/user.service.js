@@ -23,7 +23,6 @@ export const updateStatusOnDb = async (userId, status) => {
     }
     user.status = status;
     await user.save();
-    console.log("user : ", user);
     return user;
 };
 
@@ -32,7 +31,6 @@ export const udpateUserPicture = async (userId, pictureData) => {
     const user = await User.findById(userId);
 
     const { secure_url, public_id } = JSON.parse(pictureData); //On récupère les infos reçues depuis le front
-    console.log(secure_url, public_id);
 
     if (!user) {
         //Si pas duser avec cet id on return
@@ -47,10 +45,8 @@ export const udpateUserPicture = async (userId, pictureData) => {
     user.pictureId = public_id;
     const r = await user.save(); //On met ensuite les nouvelles datas dans user et on save
     if (r === user) {
-        console.log("picture update successfull");
         return true;
     }
-    console.log("picture update failed");
     return false;
 };
 

@@ -8,3 +8,9 @@ export const sign = async (payload, expires, secret) => {
         return null
     }
 }
+
+export const verifyResfreshToken =  (token) => {
+    const { REFRESH_TOKEN_SECRET } = process.env
+    const check =  jwt.verify(token, REFRESH_TOKEN_SECRET)
+    return check
+}

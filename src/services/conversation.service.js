@@ -18,7 +18,6 @@ export const findConversation = async (sender_id, receiver_id, convoId) => {
     }
     if (!convo) {
         //Si pas de résultat, on return false
-        console.log("findconvoEnd failed");
         return false;
     }
     //Une convo a été trouvé, on la return
@@ -26,7 +25,6 @@ export const findConversation = async (sender_id, receiver_id, convoId) => {
 };
 
 export const createConversation = async (sender_id, receiver_id) => {
-    console.log("crteateconvo start");
     const senderUser = await User.findById(sender_id);
     const receiverUser = await User.findById(receiver_id);
     if (!senderUser || !receiverUser) {
@@ -44,7 +42,6 @@ export const createConversation = async (sender_id, receiver_id) => {
     });
     await convo.save();
     const populatedConvo = await convo.populate("users", "-password");
-    console.log("createconvo end");
     return populatedConvo;
 };
 
@@ -95,7 +92,6 @@ export const updateUnreadMsg = async (conversationId, sender_id) => {
         }
         return false;
     } catch (error) {
-        console.log(error);
         return false;
     }
 };
@@ -111,12 +107,10 @@ export const resetUnreadMsg = async (conversationId, userId) => {
             }
         );
         if (r ) {
-            console.log("reset unread message OK");
             return true;
         }
         return false;
     } catch (error) {
-        console.log(error);
         return false;
     }
 };
@@ -166,7 +160,6 @@ export const deleteConvoByUserId = async (userId) => {
 
         // On emit les users de la convo pour que le front se mette a jour
         convo.users.forEach((user) => {
-            console.log("on emit a : ", user);
             io.to(convo._id.toString()).emit("user-deleted", {
                 userId,
                 convoId: convo._id,

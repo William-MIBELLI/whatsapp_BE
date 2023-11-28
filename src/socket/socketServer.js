@@ -9,14 +9,12 @@ export const getSocket =  (socket, io) => {
     //User connection
     socket.on('user-connection', userId => {
         socket.join(userId)
-        console.log('user connexion : ', userId)
         onlineUsers.push({ userId, socketId: socket.id })
         io.emit('online-users', onlineUsers)
     })
 
     //User join conversation
     socket.on('join-conversation', conversationId => {
-        console.log('user join : ', conversationId)
         socket.join(conversationId)
     })
 
@@ -31,7 +29,6 @@ export const getSocket =  (socket, io) => {
 
     //reset unreadMsg quand un user ouvre la convo
     socket.on('reset-unreadByUsers', async (data) => {
-        console.log('reset unread from socket')
         const { convoId, userId } = data
         await resetUnreadMsg(convoId, userId)
     } )
@@ -39,14 +36,12 @@ export const getSocket =  (socket, io) => {
     //Quand un user est en train de taper
     socket.on('typing', data => {
         const { conversationId, userId} = data
-        console.log('typing OK : ', conversationId, userId)
         socket.to(userId).emit('typing', conversationId)
     })
 
     //Quand l'user ne tape plus
     socket.on('stop typing', data => {
         const { conversationId, userId} = data
-        console.log('stop typing : ', conversationId)
         socket.to(userId).emit('stop typing', conversationId)
     })
 
@@ -56,7 +51,6 @@ export const getSocket =  (socket, io) => {
             return obj.socketId !== socket.id
         })
         onlineUsers = newOnlineUsers
-        console.log('DISCONNECT SOCKET')
         io.emit('online-users', onlineUsers)
     })
 
@@ -66,7 +60,6 @@ export const getSocket =  (socket, io) => {
             return obj.userId !== userId
         })
         onlineUsers = newOnlineUsers
-        console.log('DISCONNECT USER')
         io.emit('online-users', onlineUsers)
     })
 
@@ -78,11 +71,9 @@ export const getSocket =  (socket, io) => {
         const user = onlineUsers.find(o => o.userId === receiverId)
 
         if (user) {
-            //console.log('user trouvé ', user, receiver)
             return socket.to(user.userId).emit('callIncoming', caller, signalData)
         }
 
-        console.log('utilisateur introuvable : ', onlineUsers)
     })
 
     //on reçoit les infos de lutilisateur qui accepte l'appel ainbsi que son signal
@@ -98,11 +89,9 @@ export const getSocket =  (socket, io) => {
 
     //on récupère les infos de lutilisateur à notifier pour le call fini
     socket.on('endCall', (u) => {
-        console.log('endcall', u)
         const user = onlineUsers.find(o => o.userId === u._id)
 
         if (user) {
-            console.log('on, emit callEnded a ', u.name)
             socket.to(user.userId).emit('callEnded')   // on lui emit simplement call ended, pas besoin de donnée
         }
     })

@@ -19,7 +19,10 @@ const fileStorage = multer.diskStorage({
     },
 });
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true 
+}));
 const __dirname = path.resolve();
 //app.use(multer({ storage: fileStorage }).single("picture"));
 //app.use(multer({ storage: fileStorage }).array('files', 5));
@@ -42,7 +45,7 @@ app.use("", (req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-    console.log("on est dans le middleware ERROR : ", error.message);
+    console.log("ERROR MIDDLEWARE :", error.message, error.status);
     res.status(error?.status || 500).json({ error: error.message });
 });
 

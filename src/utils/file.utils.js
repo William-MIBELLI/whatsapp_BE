@@ -7,7 +7,6 @@ export const deleteFile = async (pictureUrl) => {
     const __dirname = path.resolve();
     const filePath = path.join(__dirname, pictureUrl)
     const  { DEFAULT_PICTURE_URL, DEFAULT_GROUP_URL } = process.env
-    console.log('filepath : ', filePath)
 
     if (pictureUrl === DEFAULT_GROUP_URL || pictureUrl === DEFAULT_PICTURE_URL) {
         return 'Default picture cant be deleted'
@@ -34,10 +33,8 @@ export const deleteFileOnCloud = async (public_id) => {
     });
     try {
         const r = await cloudinary.uploader.destroy(public_id);
-        console.log('suppression danse le cloud : ', r)
         return true
     } catch (error) {
-        console.log(error)
         return false
     }
 }

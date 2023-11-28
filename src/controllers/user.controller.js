@@ -31,7 +31,6 @@ export const updateStatus = async (req, res, next) => {
 }
 
 export const updateUser = async (req, res, next) => {
-    console.log()
     const { name, status, pictureData } = req.body
     const { userId } = req.user
     try {

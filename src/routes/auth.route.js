@@ -5,6 +5,7 @@ import {
     forgetPassword,
     login,
     logout,
+    refreshUserToken,
     register,
     resetPassword,
 } from "../controllers/auth.controller.js";
@@ -21,6 +22,8 @@ router.get("/logout", logout);
 router.get("/authmid", auhtMiddleware, (req, res, next) => {
     res.json(req.user);
 });
+
+router.get('/refresh', refreshUserToken)
 
 router.put("/forget-password", forgetPassword);
 

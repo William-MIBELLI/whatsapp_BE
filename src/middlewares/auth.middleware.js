@@ -7,8 +7,10 @@ export const auhtMiddleware = async (req, res, next) => {
         }
         const token = req.headers.authorization.split(' ')[1]
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
-            if(err){
-                throw new Error(err)
+            if (err) {
+                const error = new Error(err)
+                error.status = 401
+                throw error
             }
             req.user = payload
         })

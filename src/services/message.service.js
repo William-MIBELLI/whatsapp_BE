@@ -4,7 +4,6 @@ import { updateLatestMessage, updateUnreadMsg } from "./conversation.service.js"
 
 export const createMessage = async (messageData) => {
     const { senderId, conversationId, content, files = [] } = messageData;
-    console.log("file dans messagedata : ", files);
     const message = await Message.create({
         sender: senderId,
         message: content,

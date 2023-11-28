@@ -7,7 +7,6 @@ import { deleteFile } from "../utils/file.utils.js"
 export const createGroupOnDB = async (groupName, users, admin, pictureUrl = null) => {
     const { DEFAULT_GROUP_URL } = process.env
     
-    console.log('url du default pics : ', DEFAULT_GROUP_URL)
     const unreadByUsers = users.map(user => {
         return {userId: user, msgCount: 0}
     })
@@ -34,7 +33,6 @@ export const deleteGroupOnDB = async (groupId) => {
     const { users, pictureUrl } = group
 
     const del = await deleteFile(pictureUrl) // On supprime la photo
-    console.log('del : ',del) 
     
     await Conversation.findByIdAndDelete(groupId) // On supprime la convo
     await Message.deleteMany({ conversation: groupId }) // Et tous les messages
