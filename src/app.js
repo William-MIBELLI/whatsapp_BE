@@ -20,7 +20,7 @@ const fileStorage = multer.diskStorage({
 });
 
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CLIENT_ENDPOINT,
     credentials: true 
 }));
 const __dirname = path.resolve();
